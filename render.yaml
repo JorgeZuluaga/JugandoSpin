@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: jugando-spin
+    env: static
+    buildCommand: ""
+    staticPublishPath: .
+
