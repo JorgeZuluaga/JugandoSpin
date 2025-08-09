@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Espín Cuántico</title>
+    <!-- Importar Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        /* Estilos para asegurar que el SVG se vea bien en la página */
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto; /* permitir scroll vertical */
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            background-color: #f0f2f5;
+            font-family: 'Poppins', 'Inter', sans-serif;
+        }
+        svg {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        /* Estilo para el canvas del cubo 3D */
+        #cube-canvas {
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+        }
+        #cube-canvas:active {
+            cursor: grabbing;
+        }
+    </style>
+    <!-- Importar la fuente Inter de Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- El SVG ahora está estructurado con el cubo en la parte superior -->
+    <svg width="800" height="930" viewBox="0 0 800 930" xmlns="http://www.w3.org/2000/svg" style="margin-top:20px;">
+
+      <!-- Definiciones de Estilos y Efectos -->
+      <defs>
+        <style>
+          .title { font-size: 56px; font-weight: 800; fill: #333; letter-spacing: 0.5px; }
+          .subtitle { font-size: 18px; fill: #555; font-weight: 600; }
+          .card { fill: white; stroke: #ccc; stroke-width: 2; rx: 10; ry: 10; transition: stroke 0.3s ease; }
+          .card-text { font-size: 40px; font-weight: bold; text-anchor: middle; }
+          .button { fill: #4a90e2; rx: 8; ry: 8; cursor: pointer; }
+          .button-text { fill: white; font-size: 16px; font-weight: bold; text-anchor: middle; pointer-events: none; }
+          .stats-box { fill: #f9f9f9; stroke: #ddd; rx: 8; ry: 8; }
+          .stats-title { font-size: 14px; font-weight: bold; text-anchor: middle; }
+          .stats-value { font-size: 26px; font-weight: bold; text-anchor: middle; fill: #4a90e2; }
+          .instructions { font-size: 15px; fill: #333; }
+          .nav-button { fill: #888; rx: 5; ry: 5; cursor: pointer; }
+          .nav-text { fill: white; font-weight: bold; text-anchor: middle; pointer-events: none; }
+          .highlight { fill: rgba(255, 235, 59, 0.4); stroke: #ffc107; stroke-width: 3; rx: 15; ry: 15; pointer-events: none; transition: all 0.3s ease; }
+          .action-log-box { fill: #fff; stroke: #ddd; rx:10; ry:10; }
+          .action-log-title { font-size: 16px; font-weight: bold; fill: #333; }
+          .action-log-text { font-size: 14px; fill: #555; }
+          .action-text-highlight { font-weight: bold; fill: #4a90e2; }
+          .deck-logo { font-size: 120px; font-family: 'Times New Roman', serif; font-style: italic; font-weight: bold; fill: #ffffff; text-anchor: middle; }
+          .footer { font-size: 12px; font-style: italic; color: #666; margin: 12px 0 24px; }
+          .footer a { color: #666; text-decoration: underline; }
+          /* Animación de giro para la moneda */
+          .coin-spinning { animation: coin-spin 0.8s ease-in-out; transform-origin: center; transform-box: fill-box; }
+          @keyframes coin-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+          /* Simulación de flip 3D mediante escala en X */
+          .coin-flipping { animation: coin-flip 0.9s ease-in-out; transform-origin: center; transform-box: fill-box; }
+          @keyframes coin-flip {
+            0%   { transform: scaleX(1);   fill: #ffd700; }
+            25%  { transform: scaleX(0.25); }
+            50%  { transform: scaleX(-1);  fill: #e0c100; }
+            75%  { transform: scaleX(-0.25); }
+            100% { transform: scaleX(1);   fill: #ffd700; }
+          }
+        </style>
+        <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feDropShadow dx="3" dy="3" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/>
+        </filter>
+      </defs>
+    
+      <!-- Título -->
+      <text x="400" y="60" text-anchor="middle" class="title">Jugando con el Spin</text>
+      <text x="400" y="90" text-anchor="middle" class="subtitle">por Doctor Z Academy</text>
+      
+      <!-- Fila 1: Contadores (colocados a la izquierda del cubo, alineados al centro del cubo/AC) -->
+      <g id="stats-group" transform="translate(40, 270)">
+          <g id="measurements-group" transform="translate(0, 0)">
+              <rect class="stats-box" width="96" height="64"/>
+              <text class="stats-title" x="48" y="20">Medidas</text>
+              <text id="measurements-text" class="stats-value" x="48" y="48">0</text>
+          </g>
+          <g id="score-group" transform="translate(0, 90)">
+              <rect class="stats-box" width="96" height="64"/>
+              <text class="stats-title" x="48" y="20">Puntaje</text>
+              <text id="score-text" class="stats-value" x="48" y="48">0</text>
+          </g>
+      </g>
+
+      <!-- Fila 2: Cubo 3D y AC al lado -->
+      <g id="cube-container" transform="translate(200, 160)">
+          <foreignObject x="0" y="0" width="400" height="300">
+              <body xmlns="http://www.w3.org/1999/xhtml" style="margin:0; padding:0; width:100%; height:100%; display:flex; justify-content:center; align-items:center;">
+                  <canvas id="cube-canvas" width="400" height="300"></canvas>
+              </body>
+          </foreignObject>
+      </g>
+      <g id="coin-group" transform="translate(700, 310)" style="cursor: pointer;" onclick="game.flipCoin()">
+          <circle r="60" fill="#ffd700" stroke="#b8860b" stroke-width="2" filter="url(#shadow)"/>
+          <text id="coin-text" x="0" y="15" text-anchor="middle" style="font-size: 50px; font-weight:bold; fill:#8B4513;">?</text>
+      </g>
+
+      <!-- Fila 3: Elementos de Juego -->
+      <g id="game-row-3" transform="translate(0, 480)">
+          <g id="deck-group" transform="translate(146.67, 0)" style="cursor: pointer;" onclick="game.drawCard(event)">
+            <g id="deck-stack"></g>
+            <rect class="card" width="120" height="180" filter="url(#shadow)" style="fill:#a0c4ff;"/>
+            <text class="deck-logo" x="60" y="130">S</text>
+          </g>
+          <g id="drawn-card-group" transform="translate(340, 0)" style="visibility: hidden;">
+            <rect class="card" width="120" height="180" filter="url(#shadow)"/>
+            <text id="drawn-card-text" x="60" y="110" class="card-text">X</text>
+          </g>
+          <g id="discard-pile-group" transform="translate(533.33, 0)" style="cursor: not-allowed;" onclick="game.drawCard(event)">
+            <g id="discard-stack"></g>
+            <rect class="card" width="120" height="180" filter="url(#shadow)" style="fill:#e0e0e0;"/>
+            <text id="discard-top-card-text" x="60" y="110" class="card-text" visibility="hidden"></text>
+          </g>
+          
+      </g>
+      <!-- Carta en vuelo para animación de extracción -->
+      <rect id="flying-card" width="120" height="180" rx="10" ry="10" fill="#ffffff" stroke="#cccccc" stroke-width="2" filter="url(#shadow)" style="visibility:hidden; pointer-events:none;"/>
+      
+      <!-- Fila 4: Registro de Acciones -->
+      <g id="action-log-group" transform="translate(50, 680)">
+          <rect class="action-log-box" width="700" height="70" filter="url(#shadow)"/>
+          <text id="action-log-title" class="action-log-title" x="20" y="30">¡Bienvenido!</text>
+          <text id="action-log-details" class="action-log-text" x="20" y="55">El objetivo es acumular la mayor cantidad de puntos.</text>
+      </g>
+    
+      <!-- Fila 5: Botones e Instrucciones -->
+      <g id="show-instructions-btn" transform="translate(130, 780)" onclick="tutorial.show()">
+          <rect class="button" width="200" height="40" filter="url(#shadow)"/>
+          <text class="button-text" x="100" y="25">¿Cómo se juega?</text>
+      </g>
+      <g id="instructions-area" transform="translate(50, 780)" style="display: none;">
+        <rect width="700" height="180" fill="#fff" stroke="#ddd" rx="10" ry="10"/>
+        <text x="350" y="30" text-anchor="middle" style="font-size: 20px; font-weight: bold;">¿Cómo se Juega?</text>
+        <g id="steps-container">
+          <!-- Textos de pasos del tutorial (sin cambios) -->
+          <text id="step-1" class="instructions" x="20" y="60" visibility="visible"><tspan x="20" dy="1.2em">1. ¡Bienvenido! El juego comienza con el Cubo de Espín en el estado "+Z".</tspan><tspan x="20" dy="1.2em">El objetivo es acumular puntos midiendo el espín. Tu puntaje inicial es 0.</tspan><tspan x="20" dy="1.2em">Usa los botones de abajo para navegar por las instrucciones.</tspan></text>
+          <text id="step-2" class="instructions" x="20" y="60" visibility="hidden"><tspan x="20" dy="1.2em">2. Para jugar tu turno, haz clic en el Mazo para sacar una carta. Esto determina</tspan><tspan x="20" dy="1.2em">qué "observable" (eje X, Y o Z) vas a medir. ¡Inténtalo!</tspan></text>
+          <text id="step-3" class="instructions" x="20" y="60" visibility="hidden"><tspan x="20" dy="1.2em">3. Si sacas una carta que NO coincide con el eje del cubo (ej. "X" y cubo "Z"),</tspan><tspan x="20" dy="1.2em">debes hacer una "medida". Haz clic en el Automedidor Cuántico (la moneda).</tspan></text>
+          <text id="step-4" class="instructions" x="20" y="60" visibility="hidden"><tspan x="20" dy="1.2em">4. Tras la medida, tu puntaje se actualiza y el Cubo cambia su estado para</tspan><tspan x="20" dy="1.2em">reflejar la nueva realidad cuántica. La caja de "Registro" te explica el cambio.</tspan></text>
+          <text id="step-5" class="instructions" x="20" y="60" visibility="hidden"><tspan x="20" dy="1.2em">5. Si sacas una carta que SÍ coincide con el eje del cubo (ej. sacar "Z" cuando</tspan><tspan x="20" dy="1.2em">el cubo está en "+Z"), no lanzas la moneda y ganas puntos automáticamente.</tspan></text>
+          <text id="step-6" class="instructions" x="20" y="60" visibility="hidden"><tspan x="20" dy="1.2em">6. ¡Cuidado con las cartas especiales! 'B', 'Q' y 'R' tienen reglas únicas.</tspan><tspan x="20" dy="1.2em">La carta 'R' (Reversa) intercambia el mazo con la pila de descarte.</tspan></text>
+          <text id="step-7" class="instructions" x="20" y="60" visibility="hidden"><tspan x="20" dy="1.2em">7. ¡Ahora ya sabes jugar! Haz clic en "¡A jugar!" para ocultar esta ayuda y</tspan><tspan x="20" dy="1.2em">empezar tu partida.</tspan></text>
+        </g>
+        <g transform="translate(180, 130)">
+          <rect class="nav-button" x="0" width="100" height="30" onclick="tutorial.navigate(-1)"/><text class="nav-text" x="50" y="20">Anterior</text>
+          <rect class="nav-button" x="120" width="100" height="30" onclick="tutorial.navigate(1)"/><text class="nav-text" x="170" y="20">Siguiente</text>
+          <g transform="translate(240, 0)" onclick="tutorial.hide()"><rect class="button" width="100" height="30"/><text class="button-text" x="50" y="20">¡A jugar!</text></g>
+        </g>
+      </g>
+      <g id="reset-btn-group" transform="translate(350, 780)" onclick="game.init()">
+          <rect class="button" width="150" height="40" filter="url(#shadow)"/>
+          <text class="button-text" x="75" y="25">Reiniciar Juego</text>
+      </g>
+      <g id="auto-play-btn" transform="translate(520, 780)" onclick="game.startAutoPlay()">
+          <rect class="button" width="150" height="40" filter="url(#shadow)"/>
+          <text class="button-text" x="75" y="25">Simula Juego</text>
+      </g>
+      <g id="auto-stop-btn" transform="translate(520, 780)" style="display: none;" onclick="game.stopAutoPlay()">
+          <rect class="button" width="150" height="40" filter="url(#shadow)" style="fill:#e53935;"/>
+          <text class="button-text" x="75" y="25">Detener Juego</text>
+      </g>
+    
+      <rect id="highlight-box" class="highlight" visibility="hidden"/>
+    
+      <script type="text/javascript">
+          // --- ELEMENTOS DEL DOM ---
+          const scoreText = document.getElementById('score-text');
+          const measurementsText = document.getElementById('measurements-text');
+          const drawnCardGroup = document.getElementById('drawn-card-group');
+          const drawnCardText = document.getElementById('drawn-card-text');
+          const coinGroup = document.getElementById('coin-group');
+          const coinText = document.getElementById('coin-text');
+          const deckGroup = document.getElementById('deck-group');
+          const discardPileGroup = document.getElementById('discard-pile-group');
+          const discardTopCardText = document.getElementById('discard-top-card-text');
+          const highlightBox = document.getElementById('highlight-box');
+          const actionLogTitle = document.getElementById('action-log-title');
+          const actionLogDetails = document.getElementById('action-log-details');
+          const instructionsArea = document.getElementById('instructions-area');
+          const showInstructionsBtn = document.getElementById('show-instructions-btn');
+          const resetBtnGroup = document.getElementById('reset-btn-group');
+    
+          const colors = { X: '#d32f2f', Y: '#1976d2', Z: '#2e7d32', B: '#f57c00', Q: '#8e24aa', R: '#5d4037' };
+          const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
+
+          // --- LÓGICA DEL CUBO 3D ---
+          const cube3D = {
+              scene: null, camera: null, renderer: null, cube: null,
+              isDragging: false, isAnimating: false, previousMousePosition: { x: 0, y: 0 },
+              targetQuaternion: new THREE.Quaternion(),
+              // Orientación base con leve inclinación (vista 3D como en la imagen)
+              // Pitch (X) hacia abajo y yaw (Y) a la derecha para ver 3 caras a la vez
+              baseQuaternion: new THREE.Quaternion().setFromEuler(new THREE.Euler(-0.35, 0.6, 0)),
+              // Rotaciones para mostrar la cara indicada al FRENTE (visible)
+              rotationMap: {
+                  '+Z': new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, 0)),
+                  '-Z': new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI, 0)),
+                  '+X': new THREE.Quaternion().setFromEuler(new THREE.Euler(0, -Math.PI / 2, 0)),
+                  '-X': new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI / 2, 0)),
+                  '+Y': new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI / 2, 0, 0)),
+                  '-Y': new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0))
+              },
+              
+              init() {
+                  const canvas = document.getElementById('cube-canvas');
+                  this.scene = new THREE.Scene();
+                  this.camera = new THREE.PerspectiveCamera(60, 400/300, 0.1, 1000);
+                  this.camera.position.z = 4.6;
+
+                  this.renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+                  this.renderer.setSize(400, 300);
+                  this.renderer.setClearColor(0x000000, 0); 
+
+                  const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+                  this.scene.add(ambientLight);
+                  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                  directionalLight.position.set(1, 1, 1);
+                  this.scene.add(directionalLight);
+
+                  const faceLabels = ['+X', '-X', '+Y', '-Y', '+Z', '-Z'];
+                  const materials = faceLabels.map(label => {
+                      const axis = label.charAt(1);
+                      const axisColor = colors[axis];
+                      return new THREE.MeshLambertMaterial({
+                          map: this.createTextTexture(label, axisColor, '#FFFFFF')
+                      });
+                  });
+
+                  const geometry = new THREE.BoxGeometry(2.2, 2.2, 2.2);
+                  this.cube = new THREE.Mesh(geometry, materials);
+                  
+                  const edges = new THREE.EdgesGeometry(geometry);
+                  const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x333333, linewidth: 2 }));
+                  this.cube.add(line);
+                  
+                  this.scene.add(this.cube);
+                  // Orientación inicial: cara +Z con inclinación base
+                  this.cube.quaternion.copy(
+                    this.rotationMap['+Z'].clone().multiply(this.baseQuaternion)
+                  );
+                  
+                  canvas.addEventListener('mousedown', e => {
+                      if (this.isAnimating) return;
+                      this.isDragging = true;
+                      this.previousMousePosition = { x: e.clientX, y: e.clientY };
+                  });
+                  window.addEventListener('mousemove', e => {
+                      if (this.isAnimating || !this.isDragging) return;
+                      const deltaX = e.clientX - this.previousMousePosition.x;
+                      const deltaY = e.clientY - this.previousMousePosition.y;
+                      this.cube.rotation.y += deltaX * 0.01;
+                      this.cube.rotation.x += deltaY * 0.01;
+                      this.previousMousePosition = { x: e.clientX, y: e.clientY };
+                  });
+                  window.addEventListener('mouseup', () => { this.isDragging = false; });
+
+                  this.animate();
+              },
+
+              createTextTexture(text, textColor, faceColor) {
+                  const canvas = document.createElement('canvas');
+                  canvas.width = 128;
+                  canvas.height = 128;
+                  const context = canvas.getContext('2d');
+                  context.fillStyle = faceColor;
+                  context.fillRect(0, 0, canvas.width, canvas.height);
+                  context.font = 'bold 60px Inter';
+                  context.fillStyle = textColor;
+                  context.textAlign = 'center';
+                  context.textBaseline = 'middle';
+                  context.fillText(text, canvas.width / 2, canvas.height / 2);
+                  return new THREE.CanvasTexture(canvas);
+              },
+              
+              updateState(state) {
+                  // Orientar cara pedida y luego aplicar inclinación base para vista 3D
+                  if (this.rotationMap[state]) {
+                    this.targetQuaternion.copy(
+                      this.rotationMap[state].clone().multiply(this.baseQuaternion)
+                    );
+                    this.isAnimating = true;
+                  }
+              },
+
+              animate() {
+                  requestAnimationFrame(this.animate.bind(this));
+                  if (this.isAnimating) {
+                      this.cube.quaternion.slerp(this.targetQuaternion, 0.08);
+                      if (this.cube.quaternion.angleTo(this.targetQuaternion) < 0.01) {
+                          this.cube.quaternion.copy(this.targetQuaternion);
+                          this.isAnimating = false;
+                      }
+                  }
+                  this.renderer.render(this.scene, this.camera);
+              }
+          };
+    
+          // --- LÓGICA DEL JUEGO ---
+          const game = {
+            score: 0, measurements: 0, cubeState: '+Z',
+            deck: [], discardPile: [], turnState: 'draw', isReversed: false,
+            autoPlayTimer: null, autoPlayActive: false,
+            
+            init() {
+              this.score = 0;
+              this.measurements = 0;
+              this.cubeState = '+Z';
+              this.turnState = 'draw';
+              this.isReversed = false;
+              this.createDeck();
+              this.shuffleDeck();
+              
+              drawnCardGroup.style.visibility = 'hidden';
+              discardTopCardText.style.visibility = 'hidden';
+              coinText.textContent = '?';
+              coinGroup.style.cursor = 'not-allowed';
+              deckGroup.style.cursor = 'pointer';
+              // Auto-play UI reset
+              document.getElementById('auto-play-btn').style.display = 'block';
+              document.getElementById('auto-stop-btn').style.display = 'none';
+              this.stopAutoPlay();
+              tutorial.hide();
+              this.showActionMessage('¡Bienvenido!', 'El objetivo es acumular puntos. ', 'Saca una carta.');
+              
+              if (!cube3D.renderer) {
+                cube3D.init(); 
+              }
+               this.updatePilePositions();
+               this.updateDisplay();
+            },
+
+            startAutoPlay() {
+              if (this.autoPlayActive) return;
+              this.autoPlayActive = true;
+              document.getElementById('auto-play-btn').style.display = 'none';
+              document.getElementById('auto-stop-btn').style.display = 'block';
+              const step = () => {
+                if (!this.autoPlayActive) return;
+                if (this.turnState === 'draw') {
+                  // Simular clic en la pila correcta
+                  if (this.isReversed) {
+                    discardPileGroup.dispatchEvent(new Event('click'));
+                  } else {
+                    deckGroup.dispatchEvent(new Event('click'));
+                  }
+                } else if (this.turnState === 'measure') {
+                  coinGroup.dispatchEvent(new Event('click'));
+                }
+                // Pausa fija entre jugadas: 5s
+                const delay = 5000;
+                this.autoPlayTimer = setTimeout(step, delay);
+              };
+              step();
+            },
+
+            stopAutoPlay() {
+              this.autoPlayActive = false;
+              if (this.autoPlayTimer) {
+                clearTimeout(this.autoPlayTimer);
+                this.autoPlayTimer = null;
+              }
+              document.getElementById('auto-play-btn').style.display = 'block';
+              document.getElementById('auto-stop-btn').style.display = 'none';
+            },
+
+            updateDeckStackVisual() {
+              const stackGroup = document.getElementById('deck-stack');
+              if (!stackGroup) return;
+              // Limpiar stack actual
+              while (stackGroup.firstChild) stackGroup.removeChild(stackGroup.firstChild);
+
+              const maxRects = 6; // número máximo de capas visibles
+              const count = Math.min(maxRects, this.deck.length);
+              // Mostrar pocas capas si hay pocas cartas
+              for (let i = 0; i < count; i++) {
+                const offset = (count - i) * 3; // separación visual
+                const rect = document.createElementNS(SVG_NAMESPACE, 'rect');
+                rect.setAttribute('x', -offset);
+                rect.setAttribute('y', -offset);
+                rect.setAttribute('width', 120);
+                rect.setAttribute('height', 180);
+                rect.setAttribute('rx', 10);
+                rect.setAttribute('ry', 10);
+                rect.setAttribute('fill', '#b7d2ff');
+                rect.setAttribute('stroke', '#99bdee');
+                rect.setAttribute('stroke-width', '2');
+                rect.setAttribute('filter', 'url(#shadow)');
+                stackGroup.appendChild(rect);
+              }
+            },
+
+            updateDiscardStackVisual() {
+              const stackGroup = document.getElementById('discard-stack');
+              if (!stackGroup) return;
+              while (stackGroup.firstChild) stackGroup.removeChild(stackGroup.firstChild);
+              const maxRects = 6; // mostrar hasta 6 capas
+              const count = Math.min(maxRects, this.discardPile.length);
+              for (let i = 0; i < count; i++) {
+                const offset = (count - i) * 3;
+                const rect = document.createElementNS(SVG_NAMESPACE, 'rect');
+                rect.setAttribute('x', -offset);
+                rect.setAttribute('y', -offset);
+                rect.setAttribute('width', 120);
+                rect.setAttribute('height', 180);
+                rect.setAttribute('rx', 10);
+                rect.setAttribute('ry', 10);
+                rect.setAttribute('fill', '#eeeeee');
+                rect.setAttribute('stroke', '#d0d0d0');
+                rect.setAttribute('stroke-width', '2');
+                rect.setAttribute('filter', 'url(#shadow)');
+                stackGroup.appendChild(rect);
+              }
+            },
+    
+            createDeck() {
+              this.deck = []; this.discardPile = [];
+              for(let i=0; i<8; i++) this.deck.push('X');
+              for(let i=0; i<8; i++) this.deck.push('Y');
+              for(let i=0; i<8; i++) this.deck.push('Z');
+              for(let i=0; i<2; i++) this.deck.push('B');
+              for(let i=0; i<2; i++) this.deck.push('Q');
+              for(let i=0; i<2; i++) this.deck.push('R');
+            },
+    
+            shuffleDeck() {
+              for (let i = this.deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [this.deck[i], this.deck[j]] = [this.deck[j], this.deck[i]];
+              }
+            },
+    
+            drawCard() {
+              if (this.turnState !== 'draw') return;
+              if (tutorial.tutorialActive) tutorial.hide();
+              
+              // Determinar la pila fuente según el estado visual invertido y el objetivo del click
+              const clickedFromDiscard = event && event.currentTarget && event.currentTarget.id === 'discard-pile-group';
+              let useDiscard = this.isReversed || clickedFromDiscard;
+              // Si no estamos invertidos y el click viene del mazo S, usar S
+              // Si estamos invertidos y el click viene de la pila de descartes, usar descartes
+              // Si el click viene del grupo opuesto a lo esperado, corregimos al esperado
+              if (!this.isReversed && clickedFromDiscard) useDiscard = false;
+              if (this.isReversed && !clickedFromDiscard) useDiscard = true;
+
+              const sourcePile = useDiscard ? this.discardPile : this.deck;
+              const targetPile = useDiscard ? this.deck : this.discardPile;
+              
+              if (sourcePile.length === 0) {
+                if (this.isReversed) {
+                  // Se agotaron las cartas visibles; volver al mazo principal
+                  this.isReversed = false;
+                  this.updatePilePositions();
+                  this.showActionMessage('Mazo Invertido Agotado', 'Se vuelve al mazo principal. ', 'Saca otra carta.');
+                  this.updateDisplay();
+                  return;
+                } else {
+                  if (this.discardPile.length === 0) {
+                    this.showActionMessage('¡Fin del Juego!', 'No quedan más cartas para sacar.');
+                    return;
+                  }
+                  // Rebarajar descartes en el mazo principal
+                  this.showActionMessage('Mazo Agotado', 'Rebarajando la pila de descarte...');
+                  this.deck = [...this.discardPile];
+                  this.discardPile = [];
+                  this.shuffleDeck();
+                  this.updateDeckStackVisual();
+                  this.updateDiscardStackVisual();
+                }
+              }
+    
+              const card = sourcePile.pop();
+              const originGroup = useDiscard ? document.getElementById('discard-pile-group') : document.getElementById('deck-group');
+              const originTransform = originGroup.getAttribute('transform');
+              const originX = parseFloat(originTransform.match(/translate\(([^,]+),/)[1]) || 0;
+              const originY = parseFloat(originTransform.match(/,\s*([^\)]+)\)/)[1]) || 0;
+
+              // Posición destino: carta del medio (drawn-card-group)
+              const destTransform = document.getElementById('drawn-card-group').getAttribute('transform');
+              const destX = parseFloat(destTransform.match(/translate\(([^,]+),/)[1]) || 0;
+              const destY = parseFloat(destTransform.match(/,\s*([^\)]+)\)/)[1]) || 0;
+
+              // Ajuste por la traslación de la fila de juego (game-row-3)
+              const rowTransform = document.getElementById('game-row-3').getAttribute('transform');
+              const rowX = parseFloat(rowTransform.match(/translate\(([^,]+),/)[1]) || 0;
+              const rowY = parseFloat(rowTransform.match(/,\s*([^\)]+)\)/)[1]) || 0;
+
+              const originAbsX = rowX + originX;
+              const originAbsY = rowY + originY;
+              const destAbsX = rowX + destX;
+              const destAbsY = rowY + destY;
+
+              const flying = document.getElementById('flying-card');
+              flying.setAttribute('x', originAbsX);
+              flying.setAttribute('y', originAbsY);
+              flying.style.visibility = 'visible';
+
+              // Deshabilitar clicks durante animación
+              deckGroup.style.pointerEvents = 'none';
+              discardPileGroup.style.pointerEvents = 'none';
+
+              const duration = 400; // ms
+              const start = performance.now();
+              const animateStep = (now) => {
+                const t = Math.min(1, (now - start) / duration);
+                const ease = t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t; // easeInOut
+                const x = originAbsX + (destAbsX - originAbsX) * ease;
+                const y = originAbsY + (destAbsY - originAbsY) * ease;
+                flying.setAttribute('x', x);
+                flying.setAttribute('y', y);
+                if (t < 1) {
+                  requestAnimationFrame(animateStep);
+                } else {
+                  flying.style.visibility = 'hidden';
+                  // Mostrar carta en el centro y actualizar estados reales
+                  drawnCardText.textContent = card;
+                  drawnCardText.setAttribute('fill', colors[card] || '#333');
+                  drawnCardGroup.style.visibility = 'visible';
+                  if (card !== 'R') targetPile.push(card);
+
+                  // Rehabilitar clicks y actualizar pilas visuales
+                  deckGroup.style.pointerEvents = '';
+                  discardPileGroup.style.pointerEvents = '';
+                  this.updateDeckStackVisual();
+                  this.updateDiscardStackVisual();
+
+                  this.handleCardLogic(card);
+                }
+              };
+              requestAnimationFrame(animateStep);
+            },
+            
+            handleCardLogic(card) {
+                const currentAxis = this.cubeState.charAt(1);
+                
+                if (['B', 'Q', 'R'].includes(card)) {
+                    this.handleSpecialCard(card);
+                } else if (card === currentAxis) {
+                    this.measurements++;
+                    const sign = this.cubeState.charAt(0) === '+' ? 1 : -1;
+                    this.score += sign;
+                    this.showActionMessage('Medición Directa', `Puntaje: ${sign > 0 ? '+' : ''}${sign}. `, 'Saca otra carta.');
+                } else {
+                    this.turnState = 'measure';
+                    coinGroup.style.cursor = 'pointer';
+                    coinText.textContent = '?';
+                    this.showActionMessage('Medición Requerida', 'La carta no coincide. ', 'Lanza el Automedidor Cuántico.');
+                }
+                this.updateDisplay();
+            },
+    
+            handleSpecialCard(card) {
+                switch(card) {
+                    case 'B':
+                        this.score -= 1;
+                        const axes = ['X', 'Y', 'Z'], signs = ['+', '-'];
+                        const randomAxis = axes[Math.floor(Math.random() * axes.length)];
+                        const randomSign = signs[Math.floor(Math.random() * signs.length)];
+                        this.cubeState = randomSign + randomAxis;
+                        this.showActionMessage("Carta 'B': Campo Magnético", "Puntaje: -1. El estado del cubo cambió al azar. ", "Saca otra carta.");
+                        break;
+                    case 'Q':
+                        const flipResult = Math.random() < 0.5 ? 1 : -1;
+                        const points = 2 * flipResult;
+                        this.score += points;
+                        const currentAxis = this.cubeState.charAt(1);
+                        this.cubeState = (flipResult === 1 ? '+' : '-') + currentAxis;
+                        this.showActionMessage("Carta 'Q': Quantum Flip", `Puntaje: ${points > 0 ? '+' : ''}${points}. El signo del cubo cambió. `, "Saca otra carta.");
+                        break;
+                    case 'R': {
+                        if (this.discardPile.length === 0) {
+                            this.showActionMessage("Carta 'R': Reversa", "No hay cartas visibles para invertir. ", "Saca otra carta.");
+                            break;
+                        }
+                        if (!this.isReversed) {
+                          this.isReversed = true;
+                          this.updatePilePositions();
+                          this.showActionMessage("Carta 'R': Reversa", "Ahora el mazo activo es la pila de cartas ya sacadas. ", "Saca otra carta.");
+                        } else {
+                          this.showActionMessage("Carta 'R': Reversa", "Ya estás usando el mazo de descartes como mazo activo. ", "Saca otra carta.");
+                        }
+                        break;
+                    }
+                }
+                this.turnState = 'draw';
+                // Habilitar clic en el grupo correcto según el mazo activo
+                if (this.isReversed) {
+                  deckGroup.style.cursor = 'not-allowed';
+                  discardPileGroup.style.cursor = 'pointer';
+                } else {
+                  deckGroup.style.cursor = 'pointer';
+                  discardPileGroup.style.cursor = 'not-allowed';
+                }
+            },
+
+            updatePilePositions() {
+              // Posiciones centradas respecto al cubo: izquierda (146.67,0), derecha (533.33,0)
+              const leftPos = 'translate(146.67, 0)';
+              const rightPos = 'translate(533.33, 0)';
+              if (this.isReversed) {
+                // Poner la pila de descartes a la izquierda y el mazo oculto (S) a la derecha
+                discardPileGroup.setAttribute('transform', leftPos);
+                deckGroup.setAttribute('transform', rightPos);
+                deckGroup.style.cursor = 'not-allowed';
+                discardPileGroup.style.cursor = 'pointer';
+              } else {
+                // Posición normal
+                deckGroup.setAttribute('transform', leftPos);
+                discardPileGroup.setAttribute('transform', rightPos);
+                deckGroup.style.cursor = 'pointer';
+                discardPileGroup.style.cursor = 'not-allowed';
+              }
+            },
+    
+            flipCoin() {
+              if (this.turnState !== 'measure') return;
+              if (tutorial.tutorialActive) tutorial.hide();
+    
+              // Animación de giro de la moneda (flip 3D simulado con escala X)
+              const spinDurationMs = 900;
+              const coinCircle = document.querySelector('#coin-group circle');
+              coinCircle.classList.add('coin-flipping');
+              coinText.textContent = '';
+
+              setTimeout(() => {
+                this.measurements++;
+                const result = Math.random() < 0.5 ? '+' : '-';
+                const points = result === '+' ? 1 : -1;
+                this.score += points;
+                const measuredAxis = drawnCardText.textContent;
+                coinText.textContent = result; // Mostrar solo el signo, sin la letra
+                this.cubeState = result + measuredAxis;
+
+                this.showActionMessage("Medición Realizada", `Resultado: ${result}. Puntaje: ${points > 0 ? '+' : ''}${points}. `, "Saca otra carta.");
+
+                this.turnState = 'draw';
+                coinGroup.style.cursor = 'not-allowed';
+                deckGroup.style.cursor = 'pointer';
+                this.updateDisplay();
+
+                // Quitar la animación al terminar
+                coinCircle.classList.remove('coin-flipping');
+              }, spinDurationMs);
+            },
+    
+            showActionMessage(title, detailsPart1, detailsPart2 = '') {
+                actionLogTitle.textContent = title;
+                actionLogDetails.textContent = '';
+                const tspan1 = document.createElementNS(SVG_NAMESPACE, 'tspan');
+                tspan1.textContent = detailsPart1;
+                actionLogDetails.appendChild(tspan1);
+                if (detailsPart2) {
+                    const tspan2 = document.createElementNS(SVG_NAMESPACE, 'tspan');
+                    tspan2.textContent = detailsPart2;
+                    tspan2.setAttribute('class', 'action-text-highlight');
+                    actionLogDetails.appendChild(tspan2);
+                }
+            },
+    
+            updateDisplay() {
+              scoreText.textContent = this.score;
+              measurementsText.textContent = this.measurements;
+              
+              cube3D.updateState(this.cubeState);
+
+              if (this.discardPile.length > 0) {
+                  const topDiscard = this.discardPile[this.discardPile.length - 1];
+                  discardTopCardText.textContent = topDiscard;
+                  discardTopCardText.setAttribute('fill', colors[topDiscard] || '#333');
+                  discardTopCardText.style.visibility = 'visible';
+              } else {
+                  discardTopCardText.style.visibility = 'hidden';
+              }
+
+              // Actualizar visual del mazo: simular grosor con rectángulos detrás
+              this.updateDeckStackVisual();
+              // Actualizar visual de la pila de descartes
+              this.updateDiscardStackVisual();
+            }
+          };
+    
+          // --- LÓGICA DEL TUTORIAL ---
+          const tutorial = {
+              currentStep: 1, totalSteps: 7, tutorialActive: false,
+              show() {
+                this.tutorialActive = true;
+                instructionsArea.style.display = 'block';
+                showInstructionsBtn.style.display = 'none';
+                resetBtnGroup.setAttribute('transform', 'translate(325, 970)');
+                this.goToStep(1);
+              },
+              hide() {
+                this.tutorialActive = false;
+                instructionsArea.style.display = 'none';
+                showInstructionsBtn.style.display = 'block';
+                resetBtnGroup.setAttribute('transform', 'translate(350, 780)');
+                this.hideHighlight();
+                // Mostrar nuevamente los controles adecuados
+                document.getElementById('reset-btn-group').style.display = 'block';
+                if (game.autoPlayActive) {
+                  document.getElementById('auto-play-btn').style.display = 'none';
+                  document.getElementById('auto-stop-btn').style.display = 'block';
+                } else {
+                  document.getElementById('auto-play-btn').style.display = 'block';
+                  document.getElementById('auto-stop-btn').style.display = 'none';
+                }
+              },
+              navigate(direction) { this.goToStep(this.currentStep + direction); },
+              goToStep(step) {
+                  if (step < 1 || step > this.totalSteps) return;
+                  document.getElementById(`step-${this.currentStep}`).style.visibility = 'hidden';
+                  this.currentStep = step;
+                  document.getElementById(`step-${this.currentStep}`).style.visibility = 'visible';
+                  requestAnimationFrame(() => this.updateHighlight());
+              },
+              hideHighlight() { highlightBox.style.visibility = 'hidden'; },
+              // Detener auto-play al abrir tutorial
+              show() {
+                this.tutorialActive = true;
+                instructionsArea.style.display = 'block';
+                showInstructionsBtn.style.display = 'none';
+                resetBtnGroup.setAttribute('transform', 'translate(435, 780)');
+                game.stopAutoPlay();
+                // Ocultar botones de control mientras está activa la ayuda
+                document.getElementById('reset-btn-group').style.display = 'none';
+                document.getElementById('auto-play-btn').style.display = 'none';
+                document.getElementById('auto-stop-btn').style.display = 'none';
+                this.goToStep(1);
+              },
+              updateHighlight() {
+                  if (!this.tutorialActive) { this.hideHighlight(); return; }
+
+                  let targetElement;
+                  switch (this.currentStep) {
+                      case 1: case 5: targetElement = document.getElementById('cube-container'); break;
+                      case 2: targetElement = document.getElementById('deck-group'); break;
+                      case 3: targetElement = document.getElementById('coin-group'); break;
+                      case 4: targetElement = document.getElementById('action-log-group'); break;
+                      case 6: targetElement = document.getElementById('discard-pile-group'); break;
+                      default: this.hideHighlight(); return;
+                  }
+
+                  const svg = document.querySelector('svg');
+                  if (!targetElement || !svg) { this.hideHighlight(); return; }
+
+                  // Usar coordenadas del SVG: getBBox + getScreenCTM y convertir de vuelta a userSpace
+                  try {
+                      const bbox = targetElement.getBBox();
+                      const ctm = targetElement.getScreenCTM();
+                      const inv = svg.getScreenCTM().inverse();
+                      const p1 = svg.createSVGPoint();
+                      const p2 = svg.createSVGPoint();
+                      p1.x = bbox.x; p1.y = bbox.y;
+                      p2.x = bbox.x + bbox.width; p2.y = bbox.y + bbox.height;
+                      const sp1 = p1.matrixTransform(ctm);
+                      const sp2 = p2.matrixTransform(ctm);
+                      const up1 = sp1.matrixTransform(inv);
+                      const up2 = sp2.matrixTransform(inv);
+
+                      const margin = 10;
+                      const x = Math.min(up1.x, up2.x) - margin;
+                      const y = Math.min(up1.y, up2.y) - margin;
+                      const width = Math.abs(up2.x - up1.x) + margin * 2;
+                      const height = Math.abs(up2.y - up1.y) + margin * 2;
+
+                      highlightBox.setAttribute('x', x);
+                      highlightBox.setAttribute('y', y);
+                      highlightBox.setAttribute('width', width);
+                      highlightBox.setAttribute('height', height);
+                      highlightBox.style.visibility = 'visible';
+                  } catch (e) {
+                      // Fallback a boundingClientRect->viewBox si getBBox/CTM falla
+                      const svgRect = svg.getBoundingClientRect();
+                      const targetRect = targetElement.getBoundingClientRect();
+                      const viewBox = svg.viewBox.baseVal;
+                      const scaleX = viewBox.width / svgRect.width;
+                      const scaleY = viewBox.height / svgRect.height;
+                      const margin = 10;
+                      const x = (targetRect.left - svgRect.left) * scaleX + viewBox.x - margin;
+                      const y = (targetRect.top - svgRect.top) * scaleY + viewBox.y - margin;
+                      const width = targetRect.width * scaleX + margin * 2;
+                      const height = targetRect.height * scaleY + margin * 2;
+                      highlightBox.setAttribute('x', x);
+                      highlightBox.setAttribute('y', y);
+                      highlightBox.setAttribute('width', width);
+                      highlightBox.setAttribute('height', height);
+                      highlightBox.style.visibility = 'visible';
+                  }
+              }
+          };
+    
+          // Iniciar el juego al cargar la página
+          window.onload = () => {
+            game.init();
+          };
+      </script>
+    </svg>
+
+  <footer class="footer">
+    Desarrollado en Cursor por <a href="mailto:soydoctorz@gmail.com">Jorge I. Zuluaga, Dr. Z</a> (2025)
+  </footer>
+</body>
+</html>
