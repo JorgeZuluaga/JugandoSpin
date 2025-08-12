@@ -172,11 +172,11 @@
       </defs>
     
       <!-- Título -->
-      <text x="400" y="40" text-anchor="middle" class="title">Jugando con el Spin</text>
+      <text x="400" y="50" text-anchor="middle" class="title">Jugando con el Spin</text>
       <!--<text x="400" y="90" text-anchor="middle" class="subtitle">por Doctor Z Academy</text>-->
       <!-- Logo centrado debajo del subtítulo con enlace -->
       <a href="https://drz.academy" target="_blank">
-        <image href="drz.png" x="350" y="60" width="100" height="100" style="opacity:0.95; cursor: pointer;"/>
+        <image href="drz.png" x="350" y="70" width="100" height="100" style="opacity:0.95; cursor: pointer;"/>
       </a>
       
       <!-- Fila 1: Contadores (colocados a la izquierda del cubo, alineados al centro del cubo/AC) -->
@@ -556,7 +556,7 @@
               for(let i=0; i<8; i++) this.deck.push('Y');
               for(let i=0; i<8; i++) this.deck.push('Z');
               for(let i=0; i<2; i++) this.deck.push('B');
-              for(let i=0; i<2; i++) this.deck.push('Q');
+              for(let i=0; i<4; i++) this.deck.push('Q');
               for(let i=0; i<2; i++) this.deck.push('R');
             },
     
@@ -714,20 +714,22 @@
                         const points = 2 * flipResult;
                         this.score += points;
                         const currentAxis = this.cubeState.charAt(1);
+                        const currentSign = this.cubeState.charAt(0);
                         const newSign = flipResult === 1 ? '+' : '-';
                         const newQState = newSign + currentAxis;
                         
-                        if (newQState === this.cubeState) {
-                            // Si el signo no cambia, solo sacudir
-                            cube3D.shake();
-                            this.showActionMessage("Carta 'Q': Quantum Flip", `Puntaje: ${points > 0 ? '+' : ''}${points}. El signo del cubo no cambió. `, "Saca otra carta.");
-                            // Pequeño delay para que la sacudida se vea antes de actualizar el display
-                            setTimeout(() => this.updateDisplay(), 100);
+                        // La carta Q SIEMPRE cambia el signo (fuerza el cambio)
+                        this.cubeState = newQState;
+                        
+                        if (newSign === currentSign) {
+                            // Si el resultado aleatorio es el mismo signo, forzar el cambio al opuesto
+                            const forcedSign = currentSign === '+' ? '-' : '+';
+                            this.cubeState = forcedSign + currentAxis;
+                            this.showActionMessage("Carta 'Q': Quantum Flip", `Puntaje: ${points > 0 ? '+' : ''}${points}. El signo del cubo cambió forzadamente. `, "Saca otra carta.");
                         } else {
-                            this.cubeState = newQState;
                             this.showActionMessage("Carta 'Q': Quantum Flip", `Puntaje: ${points > 0 ? '+' : ''}${points}. El signo del cubo cambió. `, "Saca otra carta.");
-                            this.updateDisplay();
                         }
+                        this.updateDisplay();
                         break;
                     case 'R': {
                         if (this.discardPile.length === 0) {
