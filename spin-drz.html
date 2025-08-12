@@ -7,6 +7,39 @@
     <!-- Importar Three.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
+        /* Variables CSS para temas */
+        :root {
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --card-border: #cccccc;
+            --button-bg: #4a90e2;
+            --button-text: #ffffff;
+            --stats-bg: #f9f9f9;
+            --stats-border: #ddd;
+            --action-log-bg: #fff;
+            --action-log-border: #ddd;
+            --nav-button-bg: #888;
+            --highlight-bg: rgba(255, 235, 59, 0.4);
+            --highlight-border: #ffc107;
+        }
+        
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --card-bg: #2d2d2d;
+            --card-border: #555;
+            --button-bg: #4a90e2;
+            --button-text: #ffffff;
+            --stats-bg: #3a3a3a;
+            --stats-border: #555;
+            --action-log-bg: #2d2d2d;
+            --action-log-border: #555;
+            --nav-button-bg: #666;
+            --highlight-bg: rgba(255, 193, 7, 0.3);
+            --highlight-border: #ffc107;
+        }
+        
         /* Estilos para asegurar que el SVG se vea bien en la página */
         html {
             margin: 0;
@@ -24,8 +57,9 @@
             flex-direction: column;
             justify-content: flex-start;
             align-items: center;
-            background-color: #f0f2f5;
+            background-color: var(--bg-color);
             font-family: 'Poppins', 'Inter', sans-serif;
+            transition: background-color 0.3s ease;
         }
         svg {
             max-width: 100%;
@@ -40,6 +74,52 @@
         #cube-canvas:active {
             cursor: grabbing;
         }
+        
+        /* Responsive design para móvil */
+        @media (max-width: 768px) {
+            svg {
+                width: 100%;
+                height: auto;
+                min-height: 1680px; /* Asegurar espacio suficiente */
+            }
+            .title {
+                font-size: 32px !important;
+            }
+            .subtitle {
+                font-size: 14px !important;
+            }
+            .card-text {
+                font-size: 28px !important;
+            }
+            .stats-value {
+                font-size: 20px !important;
+            }
+            .stats-title {
+                font-size: 12px !important;
+            }
+            .button-text {
+                font-size: 14px !important;
+            }
+            .action-log-title {
+                font-size: 14px !important;
+            }
+            .action-log-text {
+                font-size: 12px !important;
+            }
+            .instructions {
+                font-size: 13px !important;
+            }
+        }
+        
+        /* Para pantallas muy pequeñas */
+        @media (max-width: 480px) {
+            svg {
+                min-height: 1880px;
+            }
+            .title {
+                font-size: 28px !important;
+            }
+        }
     </style>
     <!-- Importar la fuente Inter de Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,31 +129,32 @@
 <body>
 
     <!-- El SVG ahora está estructurado con el cubo en la parte superior -->
-    <svg width="800" height="930" viewBox="0 0 800 930" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin-top:20px;">
+    <svg width="800" height="1580" viewBox="0 0 800 1580" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin-top:20px;">
 
       <!-- Definiciones de Estilos y Efectos -->
       <defs>
         <style>
-          .title { font-size: 56px; font-weight: 800; fill: #333; letter-spacing: 0.5px; }
-          .subtitle { font-size: 18px; fill: #555; font-weight: 600; }
-          .card { fill: white; stroke: #ccc; stroke-width: 2; rx: 10; ry: 10; transition: stroke 0.3s ease; }
-          .card-text { font-size: 40px; font-weight: bold; text-anchor: middle; }
-          .button { fill: #4a90e2; rx: 8; ry: 8; cursor: pointer; }
-          .button-text { fill: white; font-size: 16px; font-weight: bold; text-anchor: middle; pointer-events: none; }
-          .stats-box { fill: #f9f9f9; stroke: #ddd; rx: 8; ry: 8; }
-          .stats-title { font-size: 14px; font-weight: bold; text-anchor: middle; }
+          .title { font-size: 56px; font-weight: 800; fill: var(--text-color); letter-spacing: 0.5px; }
+          .subtitle { font-size: 18px; fill: var(--text-color); opacity: 0.7; font-weight: 600; }
+          .card { fill: var(--card-bg); stroke: var(--card-border); stroke-width: 2; rx: 10; ry: 10; transition: all 0.3s ease; }
+          .card-text { font-size: 40px; font-weight: bold; text-anchor: middle; fill: var(--text-color); }
+          .button { fill: var(--button-bg); rx: 8; ry: 8; cursor: pointer; }
+          .button-text { fill: var(--button-text); font-size: 16px; font-weight: bold; text-anchor: middle; pointer-events: none; }
+          .stats-box { fill: var(--stats-bg); stroke: var(--stats-border); rx: 8; ry: 8; }
+          .stats-title { font-size: 14px; font-weight: bold; text-anchor: middle; fill: var(--text-color); }
           .stats-value { font-size: 26px; font-weight: bold; text-anchor: middle; fill: #4a90e2; }
-          .instructions { font-size: 15px; fill: #333; }
-          .nav-button { fill: #888; rx: 5; ry: 5; cursor: pointer; }
+          .instructions { font-size: 15px; fill: var(--text-color); }
+          .nav-button { fill: var(--nav-button-bg); rx: 5; ry: 5; cursor: pointer; }
           .nav-text { fill: white; font-weight: bold; text-anchor: middle; pointer-events: none; }
-          .highlight { fill: rgba(255, 235, 59, 0.4); stroke: #ffc107; stroke-width: 3; rx: 15; ry: 15; pointer-events: none; transition: all 0.3s ease; }
-          .action-log-box { fill: #fff; stroke: #ddd; rx:10; ry:10; }
-          .action-log-title { font-size: 16px; font-weight: bold; fill: #333; }
-          .action-log-text { font-size: 14px; fill: #555; }
+          .highlight { fill: var(--highlight-bg); stroke: var(--highlight-border); stroke-width: 3; rx: 15; ry: 15; pointer-events: none; transition: all 0.3s ease; }
+          .action-log-box { fill: var(--action-log-bg); stroke: var(--action-log-border); rx:10; ry:10; }
+          .action-log-title { font-size: 17px; font-weight: bold; fill: var(--text-color); }
+          .action-log-text { font-size: 15px; fill: var(--text-color); opacity: 0.9; }
           .action-text-highlight { font-weight: bold; fill: #4a90e2; }
-          .deck-logo { font-size: 120px; font-family: 'Times New Roman', serif; font-style: italic; font-weight: bold; fill: #ffffff; text-anchor: middle; }
-          .footer { font-size: 12px; font-style: italic; color: #666; margin: 12px 0 24px; }
-          .footer a { color: #666; text-decoration: underline; }
+          .physics-explanation { font-style: italic; fill: var(--text-color); font-size: 13px; font-weight: 500; }
+          .deck-logo { font-size: 120px; font-family: 'Times New Roman', serif; font-style: italic; font-weight: bold; fill: var(--text-color); text-anchor: middle; }
+          .footer { font-size: 12px; font-style: italic; color: var(--text-color); opacity: 0.6; margin: 12px 0 24px; }
+          .footer a { color: var(--text-color); opacity: 0.6; text-decoration: underline; }
           /* Animación de giro para la moneda */
           .coin-spinning { animation: coin-spin 0.8s ease-in-out; transform-origin: center; transform-box: fill-box; }
           @keyframes coin-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -101,7 +182,7 @@
       </a>
       
       <!-- Fila 1: Contadores (colocados a la izquierda del cubo, alineados al centro del cubo/AC) -->
-      <g id="stats-group" transform="translate(40, 270)">
+      <g id="stats-group" transform="translate(40, 320)">
           <g id="measurements-group" transform="translate(0, 0)">
               <rect class="stats-box" width="96" height="64"/>
               <text class="stats-title" x="48" y="20">Medidas</text>
@@ -115,20 +196,20 @@
       </g>
 
       <!-- Fila 2: Cubo 3D y AC al lado -->
-      <g id="cube-container" transform="translate(200, 160)">
+      <g id="cube-container" transform="translate(200, 210)">
           <foreignObject x="0" y="0" width="400" height="300">
               <body xmlns="http://www.w3.org/1999/xhtml" style="margin:0; padding:0; width:100%; height:100%; display:flex; justify-content:center; align-items:center;">
                   <canvas id="cube-canvas" width="400" height="300"></canvas>
               </body>
           </foreignObject>
       </g>
-      <g id="coin-group" transform="translate(700, 310)" style="cursor: pointer;" onclick="game.flipCoin()">
+      <g id="coin-group" transform="translate(700, 360)" style="cursor: pointer;" onclick="game.flipCoin()">
           <circle r="60" fill="#ffd700" stroke="#b8860b" stroke-width="2" filter="url(#shadow)"/>
           <text id="coin-text" x="0" y="15" text-anchor="middle" style="font-size: 50px; font-weight:bold; fill:#8B4513;">?</text>
       </g>
 
       <!-- Fila 3: Elementos de Juego -->
-      <g id="game-row-3" transform="translate(0, 480)">
+      <g id="game-row-3" transform="translate(0, 530)">
           <g id="deck-group" transform="translate(146.67, 0)" style="cursor: pointer;" onclick="game.drawCard(event)">
             <g id="deck-stack"></g>
             <rect class="card" width="120" height="180" filter="url(#shadow)" style="fill:#a0c4ff;"/>
@@ -149,18 +230,22 @@
       <rect id="flying-card" width="120" height="180" rx="10" ry="10" fill="#ffffff" stroke="#cccccc" stroke-width="2" filter="url(#shadow)" style="visibility:hidden; pointer-events:none;"/>
       
       <!-- Fila 4: Registro de Acciones -->
-      <g id="action-log-group" transform="translate(50, 680)">
-          <rect class="action-log-box" width="700" height="70" filter="url(#shadow)"/>
+      <g id="action-log-group" transform="translate(50, 730)">
+          <rect class="action-log-box" width="700" height="140" filter="url(#shadow)"/>
           <text id="action-log-title" class="action-log-title" x="20" y="30">¡Bienvenido!</text>
-          <text id="action-log-details" class="action-log-text" x="20" y="55">El objetivo es acumular la mayor cantidad de puntos.</text>
+          <text id="action-log-details" class="action-log-text" x="20" y="65">El objetivo es acumular la mayor cantidad de puntos.</text>
       </g>
     
       <!-- Fila 5: Botones e Instrucciones -->
-      <g id="show-instructions-btn" transform="translate(130, 780)" onclick="tutorial.show()">
-          <rect class="button" width="200" height="40" filter="url(#shadow)"/>
-          <text class="button-text" x="100" y="25">¿Cómo se juega?</text>
+      <g id="show-instructions-btn" transform="translate(100, 890)" onclick="tutorial.show()">
+          <rect class="button" width="150" height="40" filter="url(#shadow)"/>
+          <text class="button-text" x="75" y="25">¿Cómo se juega?</text>
       </g>
-      <g id="instructions-area" transform="translate(50, 780)" style="display: none;">
+      <g id="options-btn" transform="translate(270, 890)" onclick="optionsManager.toggle()">
+          <rect class="button" width="120" height="40" filter="url(#shadow)"/>
+          <text class="button-text" x="60" y="25">Opciones</text>
+      </g>
+      <g id="instructions-area" transform="translate(50, 890)" style="display: none;">
         <rect width="700" height="180" fill="#fff" stroke="#ddd" rx="10" ry="10"/>
         <text x="350" y="30" text-anchor="middle" style="font-size: 20px; font-weight: bold;">¿Cómo se Juega?</text>
         <g id="steps-container">
@@ -179,22 +264,276 @@
           <g transform="translate(240, 0)" onclick="tutorial.hide()"><rect class="button" width="100" height="30"/><text class="button-text" x="50" y="20">¡A jugar!</text></g>
         </g>
       </g>
-      <g id="reset-btn-group" transform="translate(350, 780)" onclick="game.init()">
+      
+      <!-- Caja de Opciones -->
+      <g id="options-area" transform="translate(50, 950)" style="display: none;">
+        <rect width="700" height="300" fill="white" stroke="#ddd" rx="10" ry="10" filter="url(#shadow)"/>
+        <text x="350" y="30" text-anchor="middle" style="font-size: 20px; font-weight: bold; fill: #333;">Opciones</text>
+        
+                 <!-- Tabla de opciones -->
+         <g transform="translate(50, 50)">
+           <!-- Fila 1: Tema -->
+           <g transform="translate(0, 0)">
+             <text x="0" y="15" style="font-size: 16px; font-weight: bold; fill: #333;">Tema:</text>
+             <g transform="translate(200, 0)">
+               <!-- Radio button Claro -->
+               <g id="light-theme-btn" transform="translate(0, 0)" onclick="optionsManager.setTheme('light')" style="cursor: pointer;">
+                 <circle id="light-radio" cx="8" cy="8" r="8" fill="white" stroke="#4a90e2" stroke-width="2"/>
+                 <circle id="light-radio-dot" cx="8" cy="8" r="4" fill="#4a90e2"/>
+                 <text x="20" y="12" style="font-size: 14px; fill: #333;">Claro</text>
+               </g>
+               <!-- Radio button Oscuro -->
+               <g id="dark-theme-btn" transform="translate(80, 0)" onclick="optionsManager.setTheme('dark')" style="cursor: pointer;">
+                 <circle id="dark-radio" cx="8" cy="8" r="8" fill="white" stroke="#888" stroke-width="2"/>
+                 <circle id="dark-radio-dot" cx="8" cy="8" r="4" fill="transparent"/>
+                 <text x="20" y="12" style="font-size: 14px; fill: #333;">Oscuro</text>
+               </g>
+             </g>
+           </g>
+           
+           <!-- Fila 2: Tiempo -->
+           <g transform="translate(0, 50)">
+             <text x="0" y="15" style="font-size: 16px; font-weight: bold; fill: #333;">Tiempo entre jugadas (segundos):</text>
+             <g transform="translate(350, 0)">
+               <!-- Campo de texto -->
+               <rect x="0" y="0" width="60" height="30" fill="white" stroke="#ccc" stroke-width="1" rx="3" ry="3"/>
+               <text id="time-display" x="30" y="18" style="font-size: 14px; font-weight: bold; fill: #333; text-anchor: middle;">4</text>
+               
+               <!-- Botones arriba/abajo -->
+               <g transform="translate(70, 0)">
+                 <!-- Botón arriba -->
+                 <g onclick="optionsManager.increaseTime()" style="cursor: pointer;">
+                   <rect x="0" y="0" width="20" height="15" fill="#4a90e2" rx="2" ry="2"/>
+                   <text x="10" y="10" style="font-size: 10px; font-weight: bold; fill: white; text-anchor: middle;">▲</text>
+                 </g>
+                 <!-- Botón abajo -->
+                 <g transform="translate(0, 15)" onclick="optionsManager.decreaseTime()" style="cursor: pointer;">
+                   <rect x="0" y="0" width="20" height="15" fill="#4a90e2" rx="2" ry="2"/>
+                   <text x="10" y="10" style="font-size: 10px; font-weight: bold; fill: white; text-anchor: middle;">▼</text>
+                 </g>
+               </g>
+             </g>
+           </g>
+           
+           <!-- Fila 3: Explicaciones de Física -->
+           <g transform="translate(0, 100)">
+             <text x="0" y="15" style="font-size: 16px; font-weight: bold; fill: #333;">¡Explícame la física!</text>
+             <g transform="translate(200, 0)">
+               <!-- Checkbox -->
+               <g id="physics-explanations-btn" onclick="optionsManager.togglePhysicsExplanations()" style="cursor: pointer;">
+                 <rect id="physics-checkbox" x="0" y="0" width="20" height="20" fill="white" stroke="#ccc" stroke-width="2" rx="3" ry="3"/>
+                 <text id="physics-checkmark" x="10" y="14" style="font-size: 16px; font-weight: bold; fill: transparent; text-anchor: middle;">✓</text>
+               </g>
+               <text x="30" y="12" style="font-size: 14px; fill: #333;">Mostrar explicaciones físicas</text>
+             </g>
+           </g>
+         </g>
+      </g>
+      
+      <g id="reset-btn-group" transform="translate(410, 890)" onclick="game.init()">
           <rect class="button" width="150" height="40" filter="url(#shadow)"/>
           <text class="button-text" x="75" y="25">Reiniciar Juego</text>
       </g>
-      <g id="auto-play-btn" transform="translate(520, 780)" onclick="game.startAutoPlay()">
+      <g id="auto-play-btn" transform="translate(580, 890)" onclick="game.startAutoPlay()">
           <rect class="button" width="150" height="40" filter="url(#shadow)"/>
           <text class="button-text" x="75" y="25">Simula Juego</text>
       </g>
-      <g id="auto-stop-btn" transform="translate(520, 780)" style="display: none;" onclick="game.stopAutoPlay()">
+      <g id="auto-stop-btn" transform="translate(580, 890)" style="display: none;" onclick="game.stopAutoPlay()">
           <rect class="button" width="150" height="40" filter="url(#shadow)" style="fill:#e53935;"/>
           <text class="button-text" x="75" y="25">Detener Juego</text>
       </g>
+      
+
     
       <rect id="highlight-box" class="highlight" visibility="hidden"/>
     
       <script type="text/javascript">
+          // --- MANEJADOR DE TEMAS ---
+          const themeManager = {
+              currentTheme: 'dark',
+              
+              init() {
+                  // Cargar tema guardado o usar dark por defecto
+                  const savedTheme = localStorage.getItem('spin-game-theme') || 'dark';
+                  this.setTheme(savedTheme);
+              },
+              
+              setTheme(theme) {
+                  this.currentTheme = theme;
+                  document.body.setAttribute('data-theme', theme);
+                  localStorage.setItem('spin-game-theme', theme);
+                  this.updateThemeButtons();
+                  this.updateThemeToggle();
+              },
+              
+              updateThemeButtons() {
+                  // Los botones de tema ya no existen, solo actualizar el toggle
+              },
+              
+              updateThemeToggle() {
+                  const lightRadio = document.getElementById('light-radio');
+                  const lightRadioDot = document.getElementById('light-radio-dot');
+                  const darkRadio = document.getElementById('dark-radio');
+                  const darkRadioDot = document.getElementById('dark-radio-dot');
+                  
+                  if (this.currentTheme === 'light') {
+                      lightRadio.setAttribute('stroke', '#4a90e2');
+                      lightRadioDot.setAttribute('fill', '#4a90e2');
+                      darkRadio.setAttribute('stroke', '#888');
+                      darkRadioDot.setAttribute('fill', 'transparent');
+                  } else {
+                      lightRadio.setAttribute('stroke', '#888');
+                      lightRadioDot.setAttribute('fill', 'transparent');
+                      darkRadio.setAttribute('stroke', '#4a90e2');
+                      darkRadioDot.setAttribute('fill', '#4a90e2');
+                  }
+              }
+          };
+          
+          // --- MANEJADOR DE OPCIONES ---
+          const optionsManager = {
+              currentTime: 4,
+              physicsExplanations: false,
+              
+              init() {
+                  // Cargar tiempo guardado o usar 4 por defecto
+                  this.currentTime = parseInt(localStorage.getItem('spin-game-time')) || 4;
+                  // Cargar explicaciones de física (deshabilitadas por defecto)
+                  this.physicsExplanations = localStorage.getItem('spin-game-physics') === 'true';
+                  this.updateTimeDisplay();
+                  this.updatePhysicsCheckbox();
+              },
+              
+              show() {
+                  document.getElementById('options-area').style.display = 'block';
+                  document.getElementById('show-instructions-btn').style.display = 'none';
+                  document.getElementById('options-btn').style.display = 'none';
+                  document.getElementById('reset-btn-group').style.display = 'none';
+                  document.getElementById('auto-play-btn').style.display = 'none';
+                  document.getElementById('auto-stop-btn').style.display = 'none';
+                  game.stopAutoPlay();
+                  tutorial.hide();
+                  this.updateTimeDisplay();
+              },
+              
+              toggle() {
+                  const optionsArea = document.getElementById('options-area');
+                  if (optionsArea.style.display === 'none' || optionsArea.style.display === '') {
+                      this.show();
+                  } else {
+                      this.hide();
+                  }
+              },
+              
+              hide() {
+                  document.getElementById('options-area').style.display = 'none';
+                  document.getElementById('show-instructions-btn').style.display = 'block';
+                  document.getElementById('options-btn').style.display = 'block';
+                  document.getElementById('reset-btn-group').style.display = 'block';
+                  if (game.autoPlayActive) {
+                      document.getElementById('auto-play-btn').style.display = 'none';
+                      document.getElementById('auto-stop-btn').style.display = 'block';
+                  } else {
+                      document.getElementById('auto-play-btn').style.display = 'block';
+                      document.getElementById('auto-stop-btn').style.display = 'none';
+                  }
+              },
+              
+              setTheme(theme) {
+                  themeManager.setTheme(theme);
+              },
+              
+              increaseTime() {
+                  if (this.currentTime < 20) {
+                      this.currentTime++;
+                      this.updateTimeDisplay();
+                      this.saveTime();
+                  }
+              },
+              
+              decreaseTime() {
+                  if (this.currentTime > 1) {
+                      this.currentTime--;
+                      this.updateTimeDisplay();
+                      this.saveTime();
+                  }
+              },
+              
+              updateTimeDisplay() {
+                  const timeDisplay = document.getElementById('time-display');
+                  if (timeDisplay) {
+                      timeDisplay.textContent = this.currentTime;
+                  }
+              },
+              
+              saveTime() {
+                  localStorage.setItem('spin-game-time', this.currentTime.toString());
+              },
+              
+              getTime() {
+                  return this.currentTime * 1000; // Convertir a milisegundos
+              },
+              
+              togglePhysicsExplanations() {
+                  this.physicsExplanations = !this.physicsExplanations;
+                  this.updatePhysicsCheckbox();
+                  this.savePhysicsSetting();
+              },
+              
+              updatePhysicsCheckbox() {
+                  const checkbox = document.getElementById('physics-checkbox');
+                  const checkmark = document.getElementById('physics-checkmark');
+                  
+                  if (this.physicsExplanations) {
+                      checkbox.setAttribute('fill', '#4a90e2');
+                      checkbox.setAttribute('stroke', '#4a90e2');
+                      checkmark.setAttribute('fill', 'white');
+                  } else {
+                      checkbox.setAttribute('fill', 'white');
+                      checkbox.setAttribute('stroke', '#ccc');
+                      checkmark.setAttribute('fill', 'transparent');
+                  }
+              },
+              
+              savePhysicsSetting() {
+                  localStorage.setItem('spin-game-physics', this.physicsExplanations.toString());
+              },
+              
+              getPhysicsExplanation(action, card, result) {
+                  if (!this.physicsExplanations) return '';
+                  
+                  const explanations = {
+                      'direct_measurement': {
+                          'X': 'El espín ya estaba alineado con el eje X. Medición compatible no cambia el estado.',
+                          'Y': 'El espín ya estaba alineado con el eje Y. Medición compatible no perturba el sistema.',
+                          'Z': 'El espín ya estaba alineado con el eje Z. Medición no destructiva que confirma el estado.'
+                      },
+                      'quantum_measurement': {
+                          'X': 'Medir X cuando está en otro eje causa colapso de la función de onda. Resultado aleatorio.',
+                          'Y': 'La medición en Y colapsa la superposición cuántica. Principio de incertidumbre.',
+                          'Z': 'Medir Z revela la naturaleza probabilística de la mecánica cuántica.'
+                      },
+                      'magnetic_field': 'Campo magnético interactúa con el momento magnético del espín, causando precesión aleatoria.',
+                      'quantum_flip': 'Pulso cuántico cambia el signo del espín manteniendo el eje. Operación de inversión.',
+                      'reverse': 'Invertir el mazo simula la reversibilidad temporal en mecánica cuántica.'
+                  };
+                  
+                  if (action === 'direct_measurement') {
+                      return explanations.direct_measurement[card] || '';
+                  } else if (action === 'quantum_measurement') {
+                      return explanations.quantum_measurement[card] || '';
+                  } else if (action === 'magnetic_field') {
+                      return explanations.magnetic_field;
+                  } else if (action === 'quantum_flip') {
+                      return explanations.quantum_flip;
+                  } else if (action === 'reverse') {
+                      return explanations.reverse;
+                  }
+                  
+                  return '';
+              }
+          };
+          
           // --- ELEMENTOS DEL DOM ---
           const scoreText = document.getElementById('score-text');
           const measurementsText = document.getElementById('measurements-text');
@@ -218,8 +557,9 @@
           // --- LÓGICA DEL CUBO 3D ---
           const cube3D = {
               scene: null, camera: null, renderer: null, cube: null,
-              isDragging: false, isAnimating: false, previousMousePosition: { x: 0, y: 0 },
+              isDragging: false, isAnimating: false, isShaking: false, previousMousePosition: { x: 0, y: 0 },
               targetQuaternion: new THREE.Quaternion(),
+              shakeStartTime: 0, shakeDuration: 500, // 500ms de sacudida
               // Orientación base con leve inclinación (vista 3D como en la imagen)
               // Pitch (X) hacia abajo y yaw (Y) a la derecha para ver 3 caras a la vez
               baseQuaternion: new THREE.Quaternion().setFromEuler(new THREE.Euler(-0.35, 0.6, 0)),
@@ -313,9 +653,16 @@
                     this.isAnimating = true;
                   }
               },
+              
+              shake() {
+                  this.isShaking = true;
+                  this.shakeStartTime = performance.now();
+              },
 
               animate() {
                   requestAnimationFrame(this.animate.bind(this));
+                  
+                  // Lógica de animación de rotación
                   if (this.isAnimating) {
                       this.cube.quaternion.slerp(this.targetQuaternion, 0.08);
                       if (this.cube.quaternion.angleTo(this.targetQuaternion) < 0.01) {
@@ -323,6 +670,29 @@
                           this.isAnimating = false;
                       }
                   }
+                  
+                  // Lógica de sacudida
+                  if (this.isShaking) {
+                      const currentTime = performance.now();
+                      const elapsed = currentTime - this.shakeStartTime;
+                      const progress = elapsed / this.shakeDuration;
+                      
+                      if (progress >= 1) {
+                          // Terminar sacudida
+                          this.isShaking = false;
+                          this.cube.position.set(0, 0, 0);
+                      } else {
+                          // Aplicar sacudida
+                          const intensity = 0.1 * (1 - progress); // Intensidad decrece con el tiempo
+                          const frequency = 20; // Frecuencia de la sacudida
+                          const offsetX = Math.sin(progress * frequency * Math.PI) * intensity;
+                          const offsetY = Math.cos(progress * frequency * Math.PI * 0.7) * intensity;
+                          const offsetZ = Math.sin(progress * frequency * Math.PI * 1.3) * intensity;
+                          
+                          this.cube.position.set(offsetX, offsetY, offsetZ);
+                      }
+                  }
+                  
                   this.renderer.render(this.scene, this.camera);
               }
           };
@@ -378,8 +748,8 @@
                 } else if (this.turnState === 'measure') {
                   coinGroup.dispatchEvent(new Event('click'));
                 }
-                // Pausa fija entre jugadas: 5s
-                const delay = 5000;
+                // Pausa configurable entre jugadas
+                const delay = optionsManager.getTime();
                 this.autoPlayTimer = setTimeout(step, delay);
               };
               step();
@@ -570,7 +940,10 @@
                     this.measurements++;
                     const sign = this.cubeState.charAt(0) === '+' ? 1 : -1;
                     this.score += sign;
-                    this.showActionMessage('Medición Directa', `Puntaje: ${sign > 0 ? '+' : ''}${sign}. `, 'Saca otra carta.');
+                    // Sacudir el cubo ya que no cambió de cara
+                    cube3D.shake();
+                    const physicsExplanation = optionsManager.getPhysicsExplanation('direct_measurement', card);
+                    this.showActionMessage('Medición Directa', `Puntaje: ${sign > 0 ? '+' : ''}${sign}. `, 'Saca otra carta.', physicsExplanation);
                 } else {
                     this.turnState = 'measure';
                     coinGroup.style.cursor = 'pointer';
@@ -587,16 +960,33 @@
                         const axes = ['X', 'Y', 'Z'], signs = ['+', '-'];
                         const randomAxis = axes[Math.floor(Math.random() * axes.length)];
                         const randomSign = signs[Math.floor(Math.random() * signs.length)];
-                        this.cubeState = randomSign + randomAxis;
-                        this.showActionMessage("Carta 'B': Campo Magnético", "Puntaje: -1. El estado del cubo cambió al azar. ", "Saca otra carta.");
+                        const newState = randomSign + randomAxis;
+                        
+                        if (newState === this.cubeState) {
+                            // Si el estado no cambió, sacudir el cubo
+                            cube3D.shake();
+                        }
+                        
+                        this.cubeState = newState;
+                        const physicsExplanationB = optionsManager.getPhysicsExplanation('magnetic_field');
+                        this.showActionMessage("Carta 'B': Campo Magnético", "Puntaje: -1. El estado del cubo cambió al azar. ", "Saca otra carta.", physicsExplanationB);
                         break;
                     case 'Q':
                         const flipResult = Math.random() < 0.5 ? 1 : -1;
                         const points = 2 * flipResult;
                         this.score += points;
                         const currentAxis = this.cubeState.charAt(1);
-                        this.cubeState = (flipResult === 1 ? '+' : '-') + currentAxis;
-                        this.showActionMessage("Carta 'Q': Quantum Flip", `Puntaje: ${points > 0 ? '+' : ''}${points}. El signo del cubo cambió. `, "Saca otra carta.");
+                        const newSign = flipResult === 1 ? '+' : '-';
+                        const oldSign = this.cubeState.charAt(0);
+                        
+                        if (newSign === oldSign) {
+                            // Si el signo no cambió, sacudir el cubo
+                            cube3D.shake();
+                        }
+                        
+                        this.cubeState = newSign + currentAxis;
+                        const physicsExplanationQ = optionsManager.getPhysicsExplanation('quantum_flip');
+                        this.showActionMessage("Carta 'Q': Quantum Flip", `Puntaje: ${points > 0 ? '+' : ''}${points}. El signo del cubo cambió. `, "Saca otra carta.", physicsExplanationQ);
                         break;
                     case 'R': {
                         if (this.discardPile.length === 0) {
@@ -662,7 +1052,8 @@
                 coinText.textContent = result; // Mostrar solo el signo, sin la letra
                 this.cubeState = result + measuredAxis;
 
-                this.showActionMessage("Medición Realizada", `Resultado: ${result}. Puntaje: ${points > 0 ? '+' : ''}${points}. `, "Saca otra carta.");
+                const physicsExplanation = optionsManager.getPhysicsExplanation('quantum_measurement', measuredAxis);
+                this.showActionMessage("Medición Realizada", `Resultado: ${result}. Puntaje: ${points > 0 ? '+' : ''}${points}. `, "Saca otra carta.", physicsExplanation);
 
                 this.turnState = 'draw';
                 coinGroup.style.cursor = 'not-allowed';
@@ -674,17 +1065,33 @@
               }, spinDurationMs);
             },
     
-            showActionMessage(title, detailsPart1, detailsPart2 = '') {
+            showActionMessage(title, detailsPart1, detailsPart2 = '', physicsExplanation = '') {
                 actionLogTitle.textContent = title;
                 actionLogDetails.textContent = '';
+                
+                // Primera línea: detalles principales
                 const tspan1 = document.createElementNS(SVG_NAMESPACE, 'tspan');
                 tspan1.textContent = detailsPart1;
                 actionLogDetails.appendChild(tspan1);
+                
+                // Segunda línea: detalles secundarios (si existen)
                 if (detailsPart2) {
                     const tspan2 = document.createElementNS(SVG_NAMESPACE, 'tspan');
+                    tspan2.setAttribute('x', '20');
+                    tspan2.setAttribute('dy', '1.2em');
                     tspan2.textContent = detailsPart2;
                     tspan2.setAttribute('class', 'action-text-highlight');
                     actionLogDetails.appendChild(tspan2);
+                }
+                
+                // Tercera línea: explicación física (si está activada)
+                if (physicsExplanation) {
+                    const tspan3 = document.createElementNS(SVG_NAMESPACE, 'tspan');
+                    tspan3.setAttribute('x', '20');
+                    tspan3.setAttribute('dy', '1.2em');
+                    tspan3.textContent = physicsExplanation;
+                    tspan3.setAttribute('class', 'physics-explanation');
+                    actionLogDetails.appendChild(tspan3);
                 }
             },
     
@@ -717,14 +1124,21 @@
                 this.tutorialActive = true;
                 instructionsArea.style.display = 'block';
                 showInstructionsBtn.style.display = 'none';
-                resetBtnGroup.setAttribute('transform', 'translate(325, 970)');
+                document.getElementById('options-btn').style.display = 'none';
+                resetBtnGroup.setAttribute('transform', 'translate(325, 1080)');
+                game.stopAutoPlay();
+                // Ocultar botones de control mientras está activa la ayuda
+                document.getElementById('reset-btn-group').style.display = 'none';
+                document.getElementById('auto-play-btn').style.display = 'none';
+                document.getElementById('auto-stop-btn').style.display = 'none';
                 this.goToStep(1);
               },
               hide() {
                 this.tutorialActive = false;
                 instructionsArea.style.display = 'none';
                 showInstructionsBtn.style.display = 'block';
-                resetBtnGroup.setAttribute('transform', 'translate(350, 780)');
+                document.getElementById('options-btn').style.display = 'block';
+                resetBtnGroup.setAttribute('transform', 'translate(410, 890)');
                 this.hideHighlight();
                 // Mostrar nuevamente los controles adecuados
                 document.getElementById('reset-btn-group').style.display = 'block';
@@ -745,19 +1159,6 @@
                   requestAnimationFrame(() => this.updateHighlight());
               },
               hideHighlight() { highlightBox.style.visibility = 'hidden'; },
-              // Detener auto-play al abrir tutorial
-              show() {
-                this.tutorialActive = true;
-                instructionsArea.style.display = 'block';
-                showInstructionsBtn.style.display = 'none';
-                resetBtnGroup.setAttribute('transform', 'translate(435, 780)');
-                game.stopAutoPlay();
-                // Ocultar botones de control mientras está activa la ayuda
-                document.getElementById('reset-btn-group').style.display = 'none';
-                document.getElementById('auto-play-btn').style.display = 'none';
-                document.getElementById('auto-stop-btn').style.display = 'none';
-                this.goToStep(1);
-              },
               updateHighlight() {
                   if (!this.tutorialActive) { this.hideHighlight(); return; }
 
@@ -822,7 +1223,13 @@
     
           // Iniciar el juego al cargar la página
           window.onload = () => {
+            themeManager.init();
+            optionsManager.init();
             game.init();
+            // Inicializar el toggle del tema
+            setTimeout(() => {
+              themeManager.updateThemeToggle();
+            }, 100);
           };
       </script>
     </svg>
