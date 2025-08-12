@@ -33,9 +33,10 @@
         }
         /* Estilo para el canvas del cubo 3D */
         #cube-canvas {
-            width: 100%;
-            height: 100%;
+            width: 400px;
+            height: 300px;
             cursor: grab;
+            background: transparent;
         }
         #cube-canvas:active {
             cursor: grabbing;
@@ -47,6 +48,13 @@
                 width: 100%;
                 height: auto;
                 min-height: 1200px; /* Asegurar espacio suficiente */
+            }
+            #cube-canvas {
+                width: 300px;
+                height: 225px;
+                left: 50%;
+                transform: translateX(-50%);
+                top: 210px;
             }
             .title {
                 font-size: 32px !important;
@@ -82,6 +90,13 @@
             svg {
                 min-height: 1400px;
             }
+            #cube-canvas {
+                width: 250px;
+                height: 187px;
+                left: 50%;
+                transform: translateX(-50%);
+                top: 210px;
+            }
             .title {
                 font-size: 28px !important;
             }
@@ -94,6 +109,9 @@
 </head>
 <body>
 
+    <!-- Canvas para el cubo 3D (posicionado absolutamente) -->
+    <canvas id="cube-canvas" width="400" height="300" style="position: absolute; left: 50%; top: 210px; transform: translateX(-50%); z-index: 10; pointer-events: auto;"></canvas>
+    
     <!-- El SVG ahora está estructurado con el cubo en la parte superior -->
     <svg width="800" height="1100" viewBox="0 0 800 1100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin-top:20px;">
 
@@ -177,11 +195,8 @@
 
       <!-- Fila 2: Cubo 3D y AC al lado -->
       <g id="cube-container" transform="translate(200, 210)">
-          <foreignObject x="0" y="0" width="400" height="300">
-              <body xmlns="http://www.w3.org/1999/xhtml" style="margin:0; padding:0; width:100%; height:100%; display:flex; justify-content:center; align-items:center;">
-                  <canvas id="cube-canvas" width="400" height="300"></canvas>
-              </body>
-          </foreignObject>
+          <!-- Marcador de posición para el canvas -->
+          <rect x="0" y="0" width="400" height="300" fill="transparent" id="canvas-placeholder"/>
       </g>
       <g id="coin-group" transform="translate(700, 360)" style="cursor: pointer;" onclick="game.flipCoin()">
           <circle r="60" fill="#ffd700" stroke="#b8860b" stroke-width="2" filter="url(#shadow)"/>
@@ -466,8 +481,8 @@
                 } else if (this.turnState === 'measure') {
                   coinGroup.dispatchEvent(new Event('click'));
                 }
-                // Pausa fija entre jugadas: 5s
-                const delay = 5000;
+                // Pausa fija entre jugadas: 3s
+                const delay = 3000;
                 this.autoPlayTimer = setTimeout(step, delay);
               };
               step();
@@ -683,9 +698,12 @@
                             // Si el estado no cambia, solo sacudir
                             cube3D.shake();
                             this.showActionMessage("Carta 'B': Campo Magnético", "Puntaje: -1. El estado del cubo no cambió. ", "Saca otra carta.");
+                            // Pequeño delay para que la sacudida se vea antes de actualizar el display
+                            setTimeout(() => this.updateDisplay(), 100);
                         } else {
                             this.cubeState = newState;
                             this.showActionMessage("Carta 'B': Campo Magnético", "Puntaje: -1. El estado del cubo cambió al azar. ", "Saca otra carta.");
+                            this.updateDisplay();
                         }
                         break;
                     case 'Q':
@@ -700,9 +718,12 @@
                             // Si el signo no cambia, solo sacudir
                             cube3D.shake();
                             this.showActionMessage("Carta 'Q': Quantum Flip", `Puntaje: ${points > 0 ? '+' : ''}${points}. El signo del cubo no cambió. `, "Saca otra carta.");
+                            // Pequeño delay para que la sacudida se vea antes de actualizar el display
+                            setTimeout(() => this.updateDisplay(), 100);
                         } else {
                             this.cubeState = newQState;
                             this.showActionMessage("Carta 'Q': Quantum Flip", `Puntaje: ${points > 0 ? '+' : ''}${points}. El signo del cubo cambió. `, "Saca otra carta.");
+                            this.updateDisplay();
                         }
                         break;
                     case 'R': {
