@@ -47,14 +47,14 @@
             svg {
                 width: 100%;
                 height: auto;
-                min-height: 1200px; /* Asegurar espacio suficiente */
+                min-height: 1050px; /* Asegurar espacio suficiente */
             }
             #cube-canvas {
                 width: 300px;
                 height: 225px;
                 left: 50%;
                 transform: translateX(-50%);
-                top: 210px;
+                top: 170px;
             }
             .title {
                 font-size: 32px !important;
@@ -88,14 +88,14 @@
         /* Para pantallas muy pequeñas */
         @media (max-width: 480px) {
             svg {
-                min-height: 1400px;
+                min-height: 1250px;
             }
             #cube-canvas {
                 width: 250px;
                 height: 187px;
                 left: 50%;
                 transform: translateX(-50%);
-                top: 210px;
+                top: 170px;
             }
             .title {
                 font-size: 28px !important;
@@ -110,10 +110,10 @@
 <body>
 
     <!-- Canvas para el cubo 3D (posicionado absolutamente) -->
-    <canvas id="cube-canvas" width="400" height="300" style="position: absolute; left: 50%; top: 210px; transform: translateX(-50%); z-index: 10; pointer-events: auto;"></canvas>
+    <canvas id="cube-canvas" width="400" height="300" style="position: absolute; left: 50%; top: 170px; transform: translateX(-50%); z-index: 10; pointer-events: auto;"></canvas>
     
     <!-- El SVG ahora está estructurado con el cubo en la parte superior -->
-    <svg width="800" height="1100" viewBox="0 0 800 1100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin-top:20px;">
+    <svg width="800" height="950" viewBox="0 0 800 950" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin-top:0;">
 
       <!-- Definiciones de Estilos y Efectos -->
       <defs>
@@ -136,8 +136,8 @@
           .action-log-text { font-size: 14px; fill: #555; }
           .action-text-highlight { font-weight: bold; fill: #4a90e2; }
           .deck-logo { font-size: 120px; font-family: 'Times New Roman', serif; font-style: italic; font-weight: bold; fill: #ffffff; text-anchor: middle; }
-          .footer { font-size: 12px; font-style: italic; color: #666; margin: 12px 0 24px; }
-          .footer a { color: #666; text-decoration: underline; }
+          .footer { font-size: 12px; font-style: italic; fill: #666; }
+          .footer a { fill: #666; text-decoration: underline; }
           /* Animación de giro para la moneda */
           .coin-spinning { animation: coin-spin 0.8s ease-in-out; transform-origin: center; transform-box: fill-box; }
           @keyframes coin-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -172,15 +172,15 @@
       </defs>
     
       <!-- Título -->
-      <text x="400" y="60" text-anchor="middle" class="title">Jugando con el Spin</text>
+      <text x="400" y="40" text-anchor="middle" class="title">Jugando con el Spin</text>
       <!--<text x="400" y="90" text-anchor="middle" class="subtitle">por Doctor Z Academy</text>-->
       <!-- Logo centrado debajo del subtítulo con enlace -->
       <a href="https://drz.academy" target="_blank">
-        <image href="drz.png" x="350" y="80" width="100" height="100" style="opacity:0.95; cursor: pointer;"/>
+        <image href="drz.png" x="350" y="60" width="100" height="100" style="opacity:0.95; cursor: pointer;"/>
       </a>
       
       <!-- Fila 1: Contadores (colocados a la izquierda del cubo, alineados al centro del cubo/AC) -->
-      <g id="stats-group" transform="translate(40, 320)">
+      <g id="stats-group" transform="translate(40, 280)">
           <g id="measurements-group" transform="translate(0, 0)">
               <rect class="stats-box" width="96" height="64"/>
               <text class="stats-title" x="48" y="20">Medidas</text>
@@ -194,17 +194,17 @@
       </g>
 
       <!-- Fila 2: Cubo 3D y AC al lado -->
-      <g id="cube-container" transform="translate(200, 210)">
+      <g id="cube-container" transform="translate(200, 170)">
           <!-- Marcador de posición para el canvas -->
           <rect x="0" y="0" width="400" height="300" fill="transparent" id="canvas-placeholder"/>
       </g>
-      <g id="coin-group" transform="translate(700, 360)" style="cursor: pointer;" onclick="game.flipCoin()">
+      <g id="coin-group" transform="translate(700, 320)" style="cursor: pointer;" onclick="game.flipCoin()">
           <circle r="60" fill="#ffd700" stroke="#b8860b" stroke-width="2" filter="url(#shadow)"/>
           <text id="coin-text" x="0" y="15" text-anchor="middle" style="font-size: 50px; font-weight:bold; fill:#8B4513;">?</text>
       </g>
 
       <!-- Fila 3: Elementos de Juego -->
-      <g id="game-row-3" transform="translate(0, 530)">
+      <g id="game-row-3" transform="translate(0, 490)">
           <g id="deck-group" transform="translate(146.67, 0)" style="cursor: pointer;" onclick="game.drawCard(event)">
             <g id="deck-stack"></g>
             <rect class="card" width="120" height="180" filter="url(#shadow)" style="fill:#a0c4ff;"/>
@@ -225,18 +225,18 @@
       <rect id="flying-card" width="120" height="180" rx="10" ry="10" fill="#ffffff" stroke="#cccccc" stroke-width="2" filter="url(#shadow)" style="visibility:hidden; pointer-events:none;"/>
       
       <!-- Fila 4: Registro de Acciones -->
-      <g id="action-log-group" transform="translate(50, 730)">
+      <g id="action-log-group" transform="translate(50, 690)">
           <rect class="action-log-box" width="700" height="70" filter="url(#shadow)"/>
           <text id="action-log-title" class="action-log-title" x="20" y="30">¡Bienvenido!</text>
           <text id="action-log-details" class="action-log-text" x="20" y="55">El objetivo es acumular la mayor cantidad de puntos.</text>
       </g>
     
       <!-- Fila 5: Botones e Instrucciones -->
-      <g id="show-instructions-btn" transform="translate(130, 830)" onclick="tutorial.show()">
+      <g id="show-instructions-btn" transform="translate(130, 790)" onclick="tutorial.show()">
           <rect class="button" width="200" height="40" filter="url(#shadow)"/>
           <text class="button-text" x="100" y="25">¿Cómo se juega?</text>
       </g>
-      <g id="instructions-area" transform="translate(50, 830)" style="display: none;">
+      <g id="instructions-area" transform="translate(50, 790)" style="display: none;">
         <rect width="700" height="180" fill="#fff" stroke="#ddd" rx="10" ry="10"/>
         <text x="350" y="30" text-anchor="middle" style="font-size: 20px; font-weight: bold;">¿Cómo se Juega?</text>
         <g id="steps-container">
@@ -255,18 +255,21 @@
           <g transform="translate(240, 0)" onclick="tutorial.hide()"><rect class="button" width="100" height="30"/><text class="button-text" x="50" y="20">¡A jugar!</text></g>
         </g>
       </g>
-      <g id="reset-btn-group" transform="translate(350, 830)" onclick="game.init()">
+      <g id="reset-btn-group" transform="translate(350, 790)" onclick="game.init()">
           <rect class="button" width="150" height="40" filter="url(#shadow)"/>
           <text class="button-text" x="75" y="25">Reiniciar Juego</text>
       </g>
-      <g id="auto-play-btn" transform="translate(520, 830)" onclick="game.startAutoPlay()">
+      <g id="auto-play-btn" transform="translate(520, 790)" onclick="game.startAutoPlay()">
           <rect class="button" width="150" height="40" filter="url(#shadow)"/>
           <text class="button-text" x="75" y="25">Simula Juego</text>
       </g>
-      <g id="auto-stop-btn" transform="translate(520, 830)" style="display: none;" onclick="game.stopAutoPlay()">
+      <g id="auto-stop-btn" transform="translate(520, 790)" style="display: none;" onclick="game.stopAutoPlay()">
           <rect class="button" width="150" height="40" filter="url(#shadow)" style="fill:#e53935;"/>
           <text class="button-text" x="75" y="25">Detener Juego</text>
       </g>
+    
+      <!-- Footer -->
+      <text id="footer-text" x="400" y="850" text-anchor="middle" class="footer">Desarrollado en Cursor por <a href="mailto:soydoctorz@gmail.com">Jorge I. Zuluaga, Dr. Z</a> (2025)</text>
     
       <rect id="highlight-box" class="highlight" visibility="hidden"/>
     
@@ -845,14 +848,18 @@
                 this.tutorialActive = true;
                 instructionsArea.style.display = 'block';
                 showInstructionsBtn.style.display = 'none';
-                resetBtnGroup.setAttribute('transform', 'translate(325, 1020)');
+                resetBtnGroup.setAttribute('transform', 'translate(325, 980)');
+                // Mover el footer hacia abajo cuando se muestra la ayuda
+                document.getElementById('footer-text').setAttribute('y', '1020');
                 this.goToStep(1);
               },
               hide() {
                 this.tutorialActive = false;
                 instructionsArea.style.display = 'none';
                 showInstructionsBtn.style.display = 'block';
-                resetBtnGroup.setAttribute('transform', 'translate(350, 830)');
+                resetBtnGroup.setAttribute('transform', 'translate(350, 790)');
+                // Mover el footer de vuelta a su posición original
+                document.getElementById('footer-text').setAttribute('y', '850');
                 this.hideHighlight();
                 // Mostrar nuevamente los controles adecuados
                 document.getElementById('reset-btn-group').style.display = 'block';
@@ -878,7 +885,9 @@
                 this.tutorialActive = true;
                 instructionsArea.style.display = 'block';
                 showInstructionsBtn.style.display = 'none';
-                resetBtnGroup.setAttribute('transform', 'translate(435, 830)');
+                resetBtnGroup.setAttribute('transform', 'translate(435, 790)');
+                // Mover el footer hacia abajo cuando se muestra la ayuda
+                document.getElementById('footer-text').setAttribute('y', '1020');
                 game.stopAutoPlay();
                 // Ocultar botones de control mientras está activa la ayuda
                 document.getElementById('reset-btn-group').style.display = 'none';
@@ -954,9 +963,5 @@
           };
       </script>
     </svg>
-
-  <footer class="footer">
-    Desarrollado en Cursor por <a href="mailto:soydoctorz@gmail.com">Jorge I. Zuluaga, Dr. Z</a> (2025)
-  </footer>
 </body>
 </html>
