@@ -200,7 +200,7 @@
 <body>
 
     <!-- El SVG ahora está estructurado con el cubo en la parte superior -->
-    <svg width="800" height="1580" viewBox="0 0 800 1580" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin-top:20px;">
+    <svg width="1200" height="1580" viewBox="0 0 1200 1580" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin-top:20px;">
 
       <!-- Definiciones de Estilos y Efectos -->
       <defs>
@@ -245,15 +245,15 @@
       </defs>
     
       <!-- Título -->
-      <text x="400" y="60" text-anchor="middle" class="title">Jugando con el Spin</text>
-      <!--<text x="400" y="90" text-anchor="middle" class="subtitle">por Doctor Z Academy</text>-->
+      <text x="600" y="60" text-anchor="middle" class="title">Jugando con el Spin</text>
+      <!--<text x="600" y="90" text-anchor="middle" class="subtitle">por Doctor Z Academy</text>-->
       <!-- Logo centrado debajo del subtítulo con enlace -->
       <a href="https://drz.academy" target="_blank">
-        <image href="drz.png" x="350" y="80" width="100" height="100" style="opacity:0.95; cursor: pointer;"/>
+        <image href="drz.png" x="550" y="80" width="100" height="100" style="opacity:0.95; cursor: pointer;"/>
       </a>
       
       <!-- Fila 1: Contadores (colocados a la izquierda del cubo, alineados al centro del cubo/AC) -->
-      <g id="stats-group" transform="translate(40, 320)">
+      <g id="stats-group" transform="translate(100, 320)">
           <g id="measurements-group" transform="translate(0, 0)">
               <rect class="stats-box" width="96" height="64"/>
               <text class="stats-title" x="48" y="20">Medidas</text>
@@ -267,30 +267,30 @@
       </g>
 
       <!-- Fila 2: Cubo 3D y AC al lado -->
-      <g id="cube-container" transform="translate(200, 210)">
+      <g id="cube-container" transform="translate(400, 210)">
           <foreignObject x="0" y="0" width="400" height="300" style="overflow: hidden;">
               <body xmlns="http://www.w3.org/1999/xhtml" style="margin:0; padding:0; width:100%; height:100%; display:flex; justify-content:center; align-items:center; overflow: hidden;">
                   <canvas id="cube-canvas" width="400" height="300" style="display: block; margin: 0 auto;"></canvas>
               </body>
           </foreignObject>
       </g>
-      <g id="coin-group" transform="translate(700, 360)" style="cursor: pointer;" onclick="game.flipCoin()">
+      <g id="coin-group" transform="translate(900, 360)" style="cursor: pointer;" onclick="game.flipCoin()">
           <circle r="60" fill="#ffd700" stroke="#b8860b" stroke-width="2" filter="url(#shadow)"/>
           <text id="coin-text" x="0" y="15" text-anchor="middle" style="font-size: 50px; font-weight:bold; fill:#8B4513;">?</text>
       </g>
 
       <!-- Fila 3: Elementos de Juego -->
       <g id="game-row-3" transform="translate(0, 530)">
-          <g id="deck-group" transform="translate(146.67, 0)" style="cursor: pointer;" onclick="game.drawCard(event)">
+          <g id="deck-group" transform="translate(320, 0)" style="cursor: pointer;" onclick="game.drawCard(event)">
             <g id="deck-stack"></g>
             <rect class="card" width="120" height="180" filter="url(#shadow)" style="fill:#a0c4ff;"/>
             <text class="deck-logo" x="60" y="130">S</text>
           </g>
-          <g id="drawn-card-group" transform="translate(340, 0)" style="visibility: hidden;">
+          <g id="drawn-card-group" transform="translate(540, 0)" style="visibility: hidden;">
             <rect class="card" width="120" height="180" filter="url(#shadow)"/>
             <text id="drawn-card-text" x="60" y="110" class="card-text">X</text>
           </g>
-          <g id="discard-pile-group" transform="translate(533.33, 0)" style="cursor: not-allowed;" onclick="game.drawCard(event)">
+          <g id="discard-pile-group" transform="translate(760, 0)" style="cursor: not-allowed;" onclick="game.drawCard(event)">
             <g id="discard-stack"></g>
             <rect class="card" width="120" height="180" filter="url(#shadow)" style="fill:#e0e0e0;"/>
             <text id="discard-top-card-text" x="60" y="110" class="card-text" visibility="hidden"></text>
@@ -301,24 +301,24 @@
       <rect id="flying-card" width="120" height="180" rx="10" ry="10" fill="#ffffff" stroke="#cccccc" stroke-width="2" filter="url(#shadow)" style="visibility:hidden; pointer-events:none;"/>
       
       <!-- Fila 4: Registro de Acciones -->
-      <g id="action-log-group" transform="translate(50, 730)">
-          <rect class="action-log-box" width="700" height="140" filter="url(#shadow)"/>
+      <g id="action-log-group" transform="translate(100, 730)">
+          <rect class="action-log-box" width="1000" height="140" filter="url(#shadow)"/>
           <text id="action-log-title" class="action-log-title" x="20" y="30">¡Bienvenido!</text>
           <text id="action-log-details" class="action-log-text" x="20" y="65">El objetivo es acumular la mayor cantidad de puntos.</text>
       </g>
     
       <!-- Fila 5: Botones e Instrucciones -->
-      <g id="show-instructions-btn" transform="translate(100, 890)" onclick="tutorial.show()">
+      <g id="show-instructions-btn" transform="translate(200, 890)" onclick="tutorial.show()">
           <rect class="button" width="150" height="40" filter="url(#shadow)"/>
           <text class="button-text" x="75" y="25">¿Cómo se juega?</text>
       </g>
-      <g id="options-btn" transform="translate(270, 890)" onclick="optionsManager.toggle()">
+      <g id="options-btn" transform="translate(370, 890)" onclick="optionsManager.toggle()">
           <rect class="button" width="120" height="40" filter="url(#shadow)"/>
           <text class="button-text" x="60" y="25">Opciones</text>
       </g>
-      <g id="instructions-area" transform="translate(50, 890)" style="display: none;">
-        <rect width="700" height="180" fill="#fff" stroke="#ddd" rx="10" ry="10"/>
-        <text x="350" y="30" text-anchor="middle" style="font-size: 20px; font-weight: bold;">¿Cómo se Juega?</text>
+      <g id="instructions-area" transform="translate(100, 890)" style="display: none;">
+        <rect width="1000" height="180" fill="#fff" stroke="#ddd" rx="10" ry="10"/>
+        <text x="500" y="30" text-anchor="middle" style="font-size: 20px; font-weight: bold;">¿Cómo se Juega?</text>
         <g id="steps-container">
           <!-- Textos de pasos del tutorial (sin cambios) -->
           <text id="step-1" class="instructions" x="20" y="60" visibility="visible"><tspan x="20" dy="1.2em">1. ¡Bienvenido! El juego comienza con el Cubo de Espín en el estado "+Z".</tspan><tspan x="20" dy="1.2em">El objetivo es acumular puntos midiendo el espín. Tu puntaje inicial es 0.</tspan><tspan x="20" dy="1.2em">Usa los botones de abajo para navegar por las instrucciones.</tspan></text>
@@ -337,9 +337,9 @@
       </g>
       
       <!-- Caja de Opciones -->
-      <g id="options-area" transform="translate(50, 950)" style="display: none;">
-        <rect width="700" height="300" fill="white" stroke="#ddd" rx="10" ry="10" filter="url(#shadow)"/>
-        <text x="350" y="30" text-anchor="middle" style="font-size: 20px; font-weight: bold; fill: #333;">Opciones</text>
+      <g id="options-area" transform="translate(100, 950)" style="display: none;">
+        <rect width="1000" height="300" fill="white" stroke="#ddd" rx="10" ry="10" filter="url(#shadow)"/>
+        <text x="500" y="30" text-anchor="middle" style="font-size: 20px; font-weight: bold; fill: #333;">Opciones</text>
         
                  <!-- Tabla de opciones -->
          <g transform="translate(50, 50)">
@@ -401,15 +401,15 @@
          </g>
       </g>
       
-      <g id="reset-btn-group" transform="translate(410, 890)" onclick="game.init()">
+      <g id="reset-btn-group" transform="translate(510, 890)" onclick="game.init()">
           <rect class="button" width="150" height="40" filter="url(#shadow)"/>
           <text class="button-text" x="75" y="25">Reiniciar Juego</text>
       </g>
-      <g id="auto-play-btn" transform="translate(580, 890)" onclick="game.startAutoPlay()">
+      <g id="auto-play-btn" transform="translate(680, 890)" onclick="game.startAutoPlay()">
           <rect class="button" width="150" height="40" filter="url(#shadow)"/>
           <text class="button-text" x="75" y="25">Simula Juego</text>
       </g>
-      <g id="auto-stop-btn" transform="translate(580, 890)" style="display: none;" onclick="game.stopAutoPlay()">
+      <g id="auto-stop-btn" transform="translate(680, 890)" style="display: none;" onclick="game.stopAutoPlay()">
           <rect class="button" width="150" height="40" filter="url(#shadow)" style="fill:#e53935;"/>
           <text class="button-text" x="75" y="25">Detener Juego</text>
       </g>
@@ -1143,9 +1143,9 @@
             },
 
             updatePilePositions() {
-              // Posiciones centradas respecto al cubo: izquierda (146.67,0), derecha (533.33,0)
-              const leftPos = 'translate(146.67, 0)';
-              const rightPos = 'translate(533.33, 0)';
+              // Posiciones centradas respecto al cubo: izquierda (320,0), derecha (760,0)
+              const leftPos = 'translate(320, 0)';
+              const rightPos = 'translate(760, 0)';
               if (this.isReversed) {
                 // Poner la pila de descartes a la izquierda y el mazo oculto (S) a la derecha
                 discardPileGroup.setAttribute('transform', leftPos);
